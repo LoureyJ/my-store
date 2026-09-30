@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Store</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ============ STORE SECTION ============ -->
+  <div id="storeSection">
+    <header class="amz-topbar">
+      <div class="amz-topbar-inner">
+        <a class="amz-logo" href="#" onclick="event.preventDefault(); window.scrollTo({top:0,behavior:'smooth'})">
+          <span class="logo-text" id="storeName">shop<span class="logo-accent">mart</span></span>
+        </a>
+        <div class="amz-deliver">
+          <span class="deliver-line1">Deliver to</span>
+          <span class="deliver-line2">&#128205; Your Location</span>
+        </div>
+        <div class="amz-search">
+          <select class="amz-search-cat" id="searchCategory" onchange="renderProducts()">
+            <option value="all">All</option>
+          </select>
+          <input type="text" id="searchInput" placeholder="Search products..." oninput="renderProducts()">
+          <button class="amz-search-btn" onclick="renderProducts()" aria-label="Search">&#128269;</button>
+        </div>
+        <button class="amz-topbar-link account" onclick="showAdminLogin()">
+          <span>Hello, sign in</span><strong>Account &amp; Lists</strong>
+        </button>
+        <button class="amz-topbar-link orders" onclick="showTrackOrderModal()">
+          <span>Track</span><strong>Order</strong>
+        </button>
+        <button class="amz-cart-btn" onclick="toggleCart()">
+          <span class="amz-cart-icon">&#128722;<span id="cartBadge" class="amz-cart-badge">0</span></span>
+          <span>Cart</span>
+        </button>
+      </div>
+    </header>
+
+    <nav class="amz-subnav">
+      <div class="amz-subnav-inner" id="subnavCategories">
+        <button class="amz-subnav-item all" onclick="filterCategory('all')">&#9776; All</button>
+      </div>
+    </nav>
+
+    <div class="amz-hero">
+      <h2 id="heroTitle">Welcome to our store</h2>
+      <p id="heroTagline"></p>
+    </div>
+
+    <div class="amz-main" style="padding-bottom: 0;">
+      <div class="homepage-tabs-section" id="homepageContentSection" style="display:none;">
+        <div id="homepageTabsBody">
+          <div class="homepage-tab-panel" id="hpanel-about"><div id="aboutUsContent" class="static-content"></div></div>
+          <div class="homepage-tab-panel" id="hpanel-faq"><div id="faqContent"></div></div>
+          <div class="homepage-tab-panel" id="hpanel-review">
+            <div class="review-lookup-block">
+              <h3 style="margin-bottom:8px;">Leave a Review</h3>
+              <p style="font-size:0.88rem;color:var(--amz-text-2);margin-bottom:14px;">Enter your order's tracking code to review the products you purchased.</p>
+              <div class="review-lookup-form">
+                <input type="text" id="reviewTrackingInput" placeholder="TRK-XXXXXXXX" style="text-transform:uppercase;">
+                <button class="btn-primary" onclick="lookupForReview()">Find My Order</button>
+              </div>
+              <div id="reviewLookupResult"></div>
+            </div>
+            <div class="review-recent-block" style="margin-top:28px;">
+              <h3 style="margin-bottom:14px;">Recent Customer Reviews</h3>
+              <div id="featuredReviewsList"></div>
+            </div>
+          </div>
+          <div class="homepage-tab-panel" id="hpanel-contact"><div id="contactUsContent" class="static-content"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <main class="amz-main" style="padding-top: 24px;">
+      <h2 class="amz-section-title" id="sectionTitle">Featured products</h2>
+      <div id="productGrid" class="amz-grid"></div>
+      <div id="productDetailView" style="display:none;"></div>
+    </main>
+
+    <div id="announcementBar" class="amz-announcement" style="display:none;">
+      <div class="amz-announcement-track" id="announcementTrack"></div>
+    </div>
+
+    <footer>
+      <div class="amz-footer-top"><button onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to top</button></div>
+      <div class="amz-footer-main">
+        <div class="amz-footer-inner">
+          <p>&copy; 2025 <span id="footerStoreName">My Store</span>. All rights reserved.</p>
+          <button class="amz-admin-link" onclick="showAdminLogin()">Admin Panel</button>
+        </div>
+      </div>
+    </footer>
+
+    <div id="cartSidebar" class="amz-cart-sidebar">
+      <div class="amz-cart-header">
+        <h2>Your Cart</h2>
+        <button class="amz-close-btn" onclick="closeCart()" aria-label="Close">&times;</button>
+      </div>
+      <div id="cartItems" class="amz-cart-items"></div>
+      <div class="amz-cart-footer">
+        <div class="amz-cart-total"><span>Subtotal:</span><strong id="cartTotal">&#8369;0.00</strong></div>
+        <button class="amz-checkout-btn" onclick="checkout()">Proceed to checkout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ADMIN SECTION ============ -->
+  <div id="adminSection" style="display:none;">
+    <header class="admin-header">
+      <div class="container header-content">
+        <h1>Admin Dashboard</h1>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn-secondary" onclick="previewStoreView()">Preview Store</button>
+          <button class="btn-secondary" onclick="logoutAdmin()">Logout</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container admin-main">
+      <div class="stats-grid">
+        <div class="stat-card"><h3>Total Products</h3><p id="statTotal">0</p></div>
+        <div class="stat-card"><h3>Active Products</h3><p id="statActive">0</p></div>
+        <div class="stat-card"><h3>Out of Stock</h3><p id="statOutOfStock">0</p></div>
+        <div class="stat-card"><h3>Discounted</h3><p id="statDiscounted">0</p></div>
+      </div>
+
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="products" onclick="switchAdminTab('products')">Products</button>
+        <button class="admin-tab" data-tab="orders" onclick="switchAdminTab('orders')">Orders</button>
+        <button class="admin-tab" data-tab="sales" onclick="switchAdminTab('sales')">Sales</button>
+        <button class="admin-tab" data-tab="settings" onclick="switchAdminTab('settings')">Settings</button>
+      </div>
+
+      <div id="tab-products" class="admin-tab-content active">
+        <div class="admin-actions">
+          <button class="btn-primary" onclick="showProductForm()">+ Add Product</button>
+          <div class="bulk-discount">
+            <select id="bulkDiscountCategory"><option value="">Select Category</option></select>
+            <input type="number" id="bulkDiscountPercent" placeholder="Discount %" min="0" max="100">
+            <button class="btn-secondary" onclick="applyBulkDiscount()">Apply Discount</button>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table">
+            <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Discount</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="adminProductTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="tab-orders" class="admin-tab-content">
+        <div class="table-responsive">
+          <table class="table">
+            <thead><tr><th>Order ID</th><th>Customer</th><th>Email</th><th>Total</th><th>Date</th><th>Status</th><th>Tracking</th><th>Actions</th></tr></thead>
+            <tbody id="adminOrderTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="tab-sales" class="admin-tab-content">
+        <div class="sales-stats-grid">
+          <div class="sales-stat-card"><h4>Total Revenue</h4><p id="salesTotalRevenue">&#8369;0.00</p><small>From completed orders</small></div>
+          <div class="sales-stat-card"><h4>Completed Orders</h4><p id="salesDoneOrders">0</p><small>Marked as Done</small></div>
+          <div class="sales-stat-card"><h4>Pending Orders</h4><p id="salesPendingOrders">0</p><small>Awaiting fulfillment</small></div>
+          <div class="sales-stat-card"><h4>Average Order Value</h4><p id="salesAvgOrder">&#8369;0.00</p><small>Per completed order</small></div>
+        </div>
+        <div class="sales-charts-row">
+          <div class="sales-chart-card"><h3>Last 14 Days</h3><div class="bar-chart" id="dailyChart"></div></div>
+          <div class="sales-chart-card"><h3>Last 6 Months</h3><div class="bar-chart" id="monthlyChart"></div></div>
+        </div>
+        <div class="sales-chart-card"><h3>Top Selling Products</h3><div id="topProductsList" class="top-products-list"></div></div>
+      </div>
+
+      <div id="tab-settings" class="admin-tab-content">
+        <form id="settingsForm" onsubmit="saveSettingsForm(event)" class="settings-form">
+          <div class="settings-section">
+            <h3>Store Info</h3>
+            <div class="form-row">
+              <div class="form-group"><label>Store Name</label><input type="text" id="settingsStoreName"></div>
+              <div class="form-group"><label>Tagline</label><input type="text" id="settingsTagline"></div>
+            </div>
+            <div class="form-group"><label>Announcement</label><input type="text" id="settingsAnnouncement"></div>
+            <div class="form-row">
+              <div class="form-group"><label>Currency Symbol</label><input type="text" id="settingsCurrency" maxlength="3"></div>
+              <div class="form-group"><label>Support Email</label><input type="email" id="settingsSupportEmail"></div>
+            </div>
+            <div class="form-group"><label>Admin Password</label><input type="text" id="settingsAdminPassword"></div>
+          </div>
+
+          <div class="settings-section">
+            <h3>Payment Methods</h3>
+            <p style="font-size:0.82rem;color:var(--amz-text-2);margin-bottom:14px;">Add one or more payment options. Customers pick one at checkout and upload their receipt for the chosen method.</p>
+            <div id="paymentMethodsList"></div>
+            <button type="button" class="add-row-btn" onclick="addPaymentMethod()">+ Add payment method</button>
+          </div>
+
+          <div class="settings-section">
+            <h3>Homepage Tabs</h3>
+            <p style="font-size:0.82rem;color:var(--amz-text-2);margin-bottom:14px;">These tabs appear on the storefront in this order: <strong>About Us</strong>, <strong>FAQ</strong>, <strong>Customer Review</strong>, <strong>Contact Us</strong>.</p>
+            <div class="form-group">
+              <label>About Us</label>
+              <textarea id="settingsAboutUs" rows="5" placeholder="Tell customers about your store..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>FAQ</label>
+              <div id="faqItemsList"></div>
+              <button type="button" class="add-row-btn" onclick="addFaqItem()">+ Add FAQ</button>
+            </div>
+            <div class="form-group">
+              <label>Contact Us</label>
+              <div class="contact-mode-toggle">
+                <label><input type="radio" name="contactUsMode" value="plain" onchange="onContactUsModeChange()"><span>Plain Text</span></label>
+                <label><input type="radio" name="contactUsMode" value="link" onchange="onContactUsModeChange()"><span>Hyperlink</span></label>
+              </div>
+              <textarea id="settingsContactUs" rows="4" placeholder="Phone, email, business hours, address..." style="margin-top:8px;"></textarea>
+              <div id="contactUsLinkFields" style="display:none;margin-top:10px;">
+                <label style="font-size:0.8rem;font-weight:600;margin-bottom:4px;display:block;">Link URL</label>
+                <input type="url" id="settingsContactUsUrl" placeholder="https://facebook.com/yourstore">
+                <small style="display:block;font-size:0.75rem;color:var(--amz-text-2);margin-top:4px;">The text above becomes the clickable link label.</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <h3>Theme &amp; Appearance</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Brand Color (header, nav)</label>
+                <div class="color-row">
+                  <input type="color" id="settingsBrandColor" class="color-input" oninput="document.getElementById('brandColorValue').textContent = this.value.toUpperCase()">
+                  <span class="color-value" id="brandColorValue">#232F3E</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Accent Color (buttons, badges)</label>
+                <div class="color-row">
+                  <input type="color" id="settingsAccentColor" class="color-input" oninput="document.getElementById('accentColorValue').textContent = this.value.toUpperCase()">
+                  <span class="color-value" id="accentColorValue">#FFD814</span>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Background Image</label>
+              <div class="upload-zone" id="themeUploadZone"
+                   ondragover="event.preventDefault(); this.classList.add('dragover')"
+                   ondragleave="this.classList.remove('dragover')"
+                   ondrop="handleThemeDrop(event)"
+                   onclick="if(event.target.tagName !== 'BUTTON') document.getElementById('themeImageFile').click()">
+                <input type="file" id="themeImageFile" accept="image/*" style="display:none" onchange="handleThemeFile(event)">
+                <div id="themeUploadPlaceholder">
+                  <div class="upload-icon">&#128444;</div>
+                  <div class="upload-text"><strong>Click to browse</strong> or drag &amp; drop an image here<small>Recommended 1920&times;1080 &middot; Max 5 MB</small></div>
+                </div>
+                <img id="themeUploadPreview" style="display:none" alt="Background preview">
+                <button type="button" id="themeRemoveImage" class="upload-remove-btn" style="display:none" onclick="removeThemeImage(event)">Remove Image</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Background Overlay &mdash; darkens image for readability</label>
+              <div class="slider-row">
+                <input type="range" id="settingsBgOverlay" min="0" max="90" value="0" oninput="document.getElementById('bgOverlayValue').textContent = this.value + '%'">
+                <span class="slider-value" id="bgOverlayValue">0%</span>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary" style="margin-top: 24px;">Save Settings</button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <!-- ============ GLOBAL UI ELEMENTS ============ -->
+  <div class="overlay" id="overlay" onclick="closeCart()"></div>
+  <div class="modal-root" id="modalRoot"></div>
+  <div class="toasts" id="toasts"></div>
+
+  <!-- Backend URL configuration -->
+  <script>
+    window.__API_URL__ = 'https://script.google.com/macros/s/AKfycbxnvxAnpg-1OxiqWxzvswR9ob_osG8pZ4oEgDs_nJufufjfEitFyj9FaVYZE5ixqZJEsg/exec';
+  </script>
+  <script src="scripts.js"></script>
+</body>
+</html>
