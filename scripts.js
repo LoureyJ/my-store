@@ -1,29 +1,23 @@
 /* ============ API WRAPPER ============ */
 function api(action, payload, adminPassword) {
-  const form = new URLSearchParams();
-  form.append('data', JSON.stringify({
-    action: action,
-    payload: payload || {},
-    adminPassword: adminPassword || ''
-  }));
-
   return fetch(window.__API_URL__, {
     method: 'POST',
-    body: form.toString(),
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' }
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({
+      action: action,
+      payload: payload || {},
+      adminPassword: adminPassword || ''
+    })
   }).then(function (r) {
-    if (!r.ok) throw new Error('HTTP ' + r.status);
+    if (!r.ok) {
+      throw new Error('HTTP ' + r.status);
+    }
     return r.json();
   }).catch(function (err) {
     console.error('API error [' + action + ']:', err);
     showToast('Network error — please try again', 'error');
     throw err;
   });
-}
-
-function adminApi(action, payload) {
-  const pw = sessionStorage.getItem('adminPassword') || '';
-  return api(action, payload, pw);
 }
 
 function adminApi(action, payload) {
